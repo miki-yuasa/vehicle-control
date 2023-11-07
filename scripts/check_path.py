@@ -1,3 +1,4 @@
+import time
 from vehicle_control.path import create_path
 
 import matplotlib.pyplot as plt
@@ -18,4 +19,6 @@ ax.set_title("Path")
 ax.axis("equal")
 ax.grid()
 ax.legend()
-plt.show()
+fig.canvas.draw()
+fig.canvas.flush_events()
+time.sleep(0.1)

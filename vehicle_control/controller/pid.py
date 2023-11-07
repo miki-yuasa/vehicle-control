@@ -53,7 +53,7 @@ def pid_controller(
     )
     error_xy = np.array(
         [ref["px"][min_index] - state[0], ref["py"][min_index] - state[1]]
-    ).T
+    )
     error_lat_long = T @ error_xy
     error_yaw = (yaw - ref["yaw"][min_index]) % (2 * np.pi)
 
