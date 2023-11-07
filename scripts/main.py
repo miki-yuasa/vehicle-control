@@ -14,6 +14,7 @@ kmh2ms: float = 1 / 3.6
 vel_ref: float = 30 * kmh2ms
 
 # Vehicle parameters
+tau: float = 0.27  # steering delay dynamics: 1d-approximated time constants
 wheelbase: float = 2.7
 steer_limit: float = np.deg2rad(30)
 max_vel: float = 10
