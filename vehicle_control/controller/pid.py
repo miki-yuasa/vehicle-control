@@ -42,7 +42,7 @@ def pid_controller(
     v_des: float = ref["v"][min_index]
 
     # Feedforward input calculation
-    ff_curvature = np.arctan(veh_param.wheelbase * ref["curvature"][min_index])
+    ff_curvature = np.arctan(veh_param["wheelbase"] * ref["curvature"][min_index])
 
     # Coordinate transformation to the body frame
     T = np.array(
@@ -61,6 +61,12 @@ def pid_controller(
 
     LON: int = 0
     LAT: int = 1
+
+    try:
+        kp: float = controller_params["kp"]
+        kd: float = controller_params["kd"]
+    except KeyError:
+        raise KeyError("Missing kp or kd in controller parameters.")
 
     # PID control
     delta_des = -kp * error_lat_long[LAT] - kd * error_yaw + ff_curvature

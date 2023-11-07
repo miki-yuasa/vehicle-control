@@ -35,7 +35,7 @@ def simulate_rk4(
     debug_info: list[dict[str, Any]] = []
 
     input_delay: float = controller_params["input_delay"]
-    delay_count: int = np.round(input_delay / dt)
+    delay_count: int = round(input_delay / dt)
     input_buffer: NDArray = np.zeros([delay_count, u_tmp.shape[0]])
     u = np.zeros(u_tmp.shape)  # initial input
     u_debug = u_tmp_debug.copy()
