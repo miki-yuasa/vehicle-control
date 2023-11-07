@@ -1,6 +1,7 @@
 from typing import Literal
 
 import numpy as np
+from numpy.typing import NDArray
 
 control_mode: Literal["pid", "mpc"] = "pid"
 
@@ -34,3 +35,39 @@ t = np.arange(ts, tf, dt)
 # Reference path
 path_filename: str = "assets/path.npz"
 path_data = np.load(path_filename)
+
+px_path: NDArray = path_data["px_path"]
+py_path: NDArray = path_data["py_path"]
+yaws: NDArray = path_data["yaws"]
+
+reference: NDArray = np.zeros([px_path.shape[0], 6])
+reference[:, 0] = px_path
+reference[:, 1] = py_path
+reference[:, 2] = yaws
+reference[:, 3] = vel_ref
+
+# Insert curvature to reference
+path = np.array([px_path, py_path]).T
+p1 = path[:, :-2]
+p2 = path[:, 1:-1]
+p3 = path[:, 2:]
+A = (
+    (p2[:, 0] - p1[:, 0]) * (p3[:, 1] - p1[:, 1])
+    - (p2[:, 1] - p1[:, 1]) * (p3[:, 0] - p1[:, 0])
+) / 2
+reference[1:-1, 4] = (
+    4
+    * A
+    / np.linalg.norm(p2 - p1, axis=0)
+    / np.linalg.norm(p3 - p2, axis=0)
+    / np.linalg.norm(p3 - p1, axis=0)
+)
+
+# Insert velocity reference
+px_diff = np.diff(px_path)
+py_diff = np.diff(py_path)
+distances = np.sqrt(px_diff**2 + py_diff**2)
+dt_ref = distances / vel_ref
+t_ref = np.cumsum(dt_ref)
+reference[:-1, 5] = np.diff(t_ref)
+reference[-1, 5] = reference[-2, 5] + dt_ref[-1]
