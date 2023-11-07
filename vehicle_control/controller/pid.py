@@ -3,7 +3,11 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from vehicle_control.typing import ReferenceDict, VehicleParameters
+from vehicle_control.typing import (
+    ControllerParameters,
+    ReferenceDict,
+    VehicleParameters,
+)
 
 
 def pid_controller(
@@ -11,8 +15,7 @@ def pid_controller(
     t: float,
     ref: ReferenceDict,
     veh_param: VehicleParameters,
-    kp: float = 0.3,
-    kd: float = 1.5,
+    controller_params: ControllerParameters,
 ) -> tuple[NDArray, dict[str, Any]]:
     """
     PID controller for lateral and longitudinal control.

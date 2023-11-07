@@ -2,8 +2,15 @@ from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
+from vehicle_control.kinematics import kinematic_model
+from vehicle_control.simulate import simulate_rk4
 
-from vehicle_control.typing import ReferenceDict
+from vehicle_control.typing import (
+    ControllerParameters,
+    ReferenceDict,
+    VehicleParameters,
+)
+from vehicle_control.controller.pid import pid_controller
 
 control_mode: Literal["pid", "mpc"] = "pid"
 
@@ -26,6 +33,10 @@ input_delay: float = 0.24  # [s]
 control_dt: float = 0.03  # [s]
 measurement_noise_std = [0.1, 0.1, np.deg2rad(1.0), np.deg2rad(0.5)]
 steering_steady_state_error = np.deg2rad(1.0)
+
+# PID parameters
+kp: float = 0.3
+kd: float = 1.5
 
 # Initial position (x, y, yaw, delta)
 x0: list[float] = [0.0, 0.5, 0.0, 0.0]
@@ -54,7 +65,7 @@ path = np.array([px_path, py_path]).T
 p1 = path[:, :-2]
 p2 = path[:, 1:-1]
 p3 = path[:, 2:]
-A = (
+A: NDArray = (
     (p2[:, 0] - p1[:, 0]) * (p3[:, 1] - p1[:, 1])
     - (p2[:, 1] - p1[:, 1]) * (p3[:, 0] - p1[:, 0])
 ) / 2
@@ -83,3 +94,36 @@ ref_dict: ReferenceDict = {
     "curvature": reference[:, 4],
     "t": reference[:, 5],
 }
+
+controller_params: ControllerParameters = {
+    "input_delay": input_delay,
+    "control_dt": control_dt,
+    "measurement_noise_std": measurement_noise_std,
+    "kp": kp,
+    "kd": kd,
+}
+
+veh_params: VehicleParameters = {
+    "tau": tau,
+    "wheelbase": wheelbase,
+    "steer_limit": steer_limit,
+    "max_vel": max_vel,
+    "min_vel": min_vel,
+    "steering_steady_state_error": steering_steady_state_error,
+}
+
+match control_mode:
+    case "pid":
+        X, U, debug = simulate_rk4(
+            kinematic_model,
+            pid_controller,
+            x0,
+            ref_dict,
+            ts,
+            dt,
+            tf,
+            veh_params,
+            controller_params,
+        )
+    case _:
+        raise NotImplementedError(f"Control mode {control_mode} is not implemented.")
