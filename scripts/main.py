@@ -28,10 +28,10 @@ steering_steady_state_error = np.deg2rad(1.0)
 # Initial position (x, y, yaw, delta)
 x0: list[float] = [0.0, 0.5, 0.0, 0.0]
 
-ts = 0.0
-dt = simulation_rk4_time_step
-tf = simulation_time
-t = np.arange(ts, tf, dt)
+ts: float = 0.0
+dt: float = simulation_rk4_time_step
+tf: int = simulation_time
+t: NDArray = np.arange(ts, tf, dt)
 
 # Reference path
 path_filename: str = "assets/path.npz"
