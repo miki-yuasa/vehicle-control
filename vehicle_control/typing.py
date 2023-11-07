@@ -1,6 +1,7 @@
-from typing import NamedTuple
+from typing import NamedTuple, TypedDict
 
 import numpy as np
+from numpy.typing import NDArray
 
 
 class VehicleParameters(NamedTuple):
@@ -10,3 +11,12 @@ class VehicleParameters(NamedTuple):
     max_vel: float
     min_vel: float
     steering_steady_state_error: float
+
+
+class ReferenceDict(TypedDict):
+    px: NDArray
+    py: NDArray
+    yaw: NDArray
+    v: NDArray
+    curvature: NDArray
+    t: NDArray

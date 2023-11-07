@@ -3,17 +3,17 @@ from typing import Any, Callable
 import numpy as np
 from numpy.typing import NDArray
 
-from vehicle_control.typing import VehicleParameters
+from vehicle_control.typing import ReferenceDict, VehicleParameters
 
 
 def simulate_rk4(
     model: Callable[[NDArray, NDArray, VehicleParameters], NDArray],
     controller: Callable[
-        [NDArray, float, NDArray, dict[str, Any]],
-        NDArray,
+        [NDArray, float, ReferenceDict, dict[str, Any]],
+        tuple[NDArray, dict[str, Any]],
     ],
     x0: list[float],
-    ref: NDArray,
+    ref_dict: ReferenceDict,
     ts: float,
     dt: float,
     tf: int,

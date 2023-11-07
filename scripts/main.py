@@ -3,6 +3,8 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
+from vehicle_control.typing import ReferenceDict
+
 control_mode: Literal["pid", "mpc"] = "pid"
 
 is_video_saved: bool = False
@@ -64,7 +66,7 @@ reference[1:-1, 4] = (
     / np.linalg.norm(p3 - p1, axis=0)
 )
 
-# Insert velocity reference
+# Insert time reference
 px_diff = np.diff(px_path)
 py_diff = np.diff(py_path)
 distances = np.sqrt(px_diff**2 + py_diff**2)
@@ -72,3 +74,12 @@ dt_ref = distances / vel_ref
 t_ref = np.cumsum(dt_ref)
 reference[:-1, 5] = np.diff(t_ref)
 reference[-1, 5] = reference[-2, 5] + dt_ref[-1]
+
+ref_dict: ReferenceDict = {
+    "px": reference[:, 0],
+    "py": reference[:, 1],
+    "yaw": reference[:, 2],
+    "v": reference[:, 3],
+    "curvature": reference[:, 4],
+    "t": reference[:, 5],
+}
