@@ -18,7 +18,10 @@ class ControllerParameters(TypedDict):
     control_dt: float
     measurement_noise_std: list[float]
     kp: NotRequired[float]
+    ki: NotRequired[float]
     kd: NotRequired[float]
+    cum_error_lat: NotRequired[float]
+    cum_error_yaw: NotRequired[float]
 
 
 class ReferenceDict(TypedDict):

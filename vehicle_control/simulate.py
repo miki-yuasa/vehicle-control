@@ -53,6 +53,9 @@ def simulate_rk4(
                 x_noised, t, ref_dict, veh_params, controller_params
             )
 
+        controller_params["cum_error_lat"] = u_debug["cum_error_lat"]
+        controller_params["cum_error_yaw"] = u_debug["cum_error_yaw"]
+
         # add input delay
         input_buffer = np.vstack([u, input_buffer[:-1, :]])
         u_delayed = input_buffer[-1, :]

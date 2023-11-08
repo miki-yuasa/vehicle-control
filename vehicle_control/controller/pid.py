@@ -64,12 +64,33 @@ def pid_controller(
 
     try:
         kp: float = controller_params["kp"]
+        ki: float = controller_params["ki"]
         kd: float = controller_params["kd"]
     except KeyError:
         raise KeyError("Missing kp or kd in controller parameters.")
 
+    try:
+        cum_error_lat = (
+            controller_params["cum_error_lat"]
+            + error_lat_long[LAT] * controller_params["control_dt"]
+        )
+
+        cum_error_yaw = (
+            controller_params["cum_error_yaw"]
+            + error_yaw * controller_params["control_dt"]
+        )
+    except KeyError:
+        raise KeyError(
+            "Missing cum_error_lat or cum_error_yaw in controller parameters."
+        )
+
     # PID control
-    delta_des = -kp * error_lat_long[LAT] - kd * error_yaw + ff_curvature
+    delta_des = (
+        -kp * error_lat_long[LAT]
+        - (ki * cum_error_lat + ki * 0.5 * cum_error_yaw)
+        - kd * error_yaw
+        + ff_curvature
+    )
     fb_lat = -kp * error_lat_long[LAT]
     fb_yaw = -kd * error_yaw
 
@@ -85,6 +106,8 @@ def pid_controller(
         "min_x": ref["px"][min_index],
         "min_y": ref["py"][min_index],
         "min_yaw": ref["yaw"][min_index],
+        "cum_error_lat": cum_error_lat,
+        "cum_error_yaw": cum_error_yaw,
     }
 
     return u, debug_info

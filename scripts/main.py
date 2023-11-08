@@ -38,15 +38,16 @@ min_vel: float = -5
 
 input_delay: float = 0.24  # [s]
 control_dt: float = 0.03  # [s]
-measurement_noise_std = [0.1, 0.1, np.deg2rad(1.0), np.deg2rad(0.5)]
-steering_steady_state_error = np.deg2rad(1.0)
+measurement_noise_std = [0.1, 0.1, np.deg2rad(1.0), np.deg2rad(1)]
+steering_steady_state_error = np.deg2rad(0.5)
 
 # PID parameters
 kp: float = 0.1
-kd: float = 3
+ki: float = 0.015
+kd: float = 10
 
 # Initial position (x, y, yaw, delta)
-x0: list[float] = [0.0, 0.0, 0.0, 0.0]
+x0: list[float] = [0.0, 0.5, 0.0, 0.0]
 
 ts: float = 0.0
 dt: float = simulation_rk4_time_step
@@ -108,7 +109,10 @@ controller_params: ControllerParameters = {
     "control_dt": control_dt,
     "measurement_noise_std": measurement_noise_std,
     "kp": kp,
+    "ki": ki,
     "kd": kd,
+    "cum_error_lat": 0.0,
+    "cum_error_yaw": 0.0,
 }
 
 veh_params: VehicleParameters = {
